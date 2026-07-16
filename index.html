@@ -1,877 +1,485 @@
 <!DOCTYPE html>
+<html lang="en">
 
-<html class="scroll-smooth no-js" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>WebJugad Labs — Digital Experiences That Grow Businesses</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          primary: '#004ac6',
-          'primary-container': '#2563eb',
-          'primary-fixed': '#dbe1ff',
-          'on-primary-fixed-variant': '#003ea8',
-          'on-background': '#191b23',
-          background: '#faf8ff',
-          'on-surface-variant': '#434655',
-          'outline-variant': '#c3c6d7',
-          'surface-container-low': '#f3f3fe',
-          'surface-container-high': '#e7e7f3',
-          'surface-container-lowest': '#ffffff',
-          'tertiary-fixed': '#ffdbcd',
-          tertiary: '#943700',
-          error: '#ba1a1a',
-        },
-        fontFamily: {
-          display: ['Space Grotesk', 'sans-serif'],
-          body: ['Inter', 'sans-serif'],
-        },
-        spacing: {
-          'margin-mobile': '24px',
-          'margin-desktop': '64px',
-          'gutter': '32px',
-          'stack-lg': '64px',
-          'stack-xl': '128px',
-        },
-        maxWidth: {
-          'container-max': '1280px',
-        },
-        boxShadow: {
-          low: '0px 4px 20px rgba(15,23,42,0.05)',
-          medium: '0px 10px 40px rgba(15,23,42,0.1)',
-          high: '0px 20px 50px rgba(37,99,235,0.15)',
-        }
-      }
-    }
-  }
-</script>
-<style>
-  html { -webkit-font-smoothing: antialiased; }
-  .glass {
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-  .hide-scrollbar::-webkit-scrollbar { display: none; }
-  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  [data-reveal].revealed { opacity: 1; transform: translateY(0); }
-  
-  .tilt-card { 
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease; 
-    transform-style: preserve-3d; 
-    will-change: transform; 
-  }
-  
-  .mockup-window { 
-    perspective: 1400px; 
-    transition: transform 0.1s ease-out;
-  }
-  .mockup-inner { 
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
-    transform-style: preserve-3d; 
-  }
-  .mockup-window:hover .mockup-inner { transform: rotateY(-4deg) rotateX(2deg) scale(1.01); }
-
-  /* Orbit animation */
-  .orbit-stage { position: relative; width: 380px; height: 380px; display: flex; align-items: center; justify-content: center; }
-  .orbit-hub {
-    position: absolute; width: 84px; height: 84px; border-radius: 9999px;
-    background: linear-gradient(135deg, #004ac6, #2563eb);
-    display: flex; align-items: center; justify-content: center; color: #fff;
-    box-shadow: 0 0 0 8px rgba(37,99,235,0.08); z-index: 3;
-    animation: hubPulse 3.2s ease-in-out infinite;
-  }
-  @keyframes hubPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-  .orbit-ring { position: absolute; border: 1.5px dashed rgba(115,118,134,0.2); border-radius: 9999px; }
-  .orbit-ring-1 { width: 210px; height: 210px; animation: orbitSpin 20s linear infinite; }
-  .orbit-ring-2 { width: 340px; height: 340px; animation: orbitSpin 35s linear infinite reverse; }
-  @keyframes orbitSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .orbit-item { position: absolute; top: 50%; left: 50%; }
-  .orbit-ring-1 .orbit-item { transform: rotate(var(--a)) translateX(105px) rotate(calc(-1 * var(--a))); }
-  .orbit-ring-2 .orbit-item { transform: rotate(var(--a)) translateX(170px) rotate(calc(-1 * var(--a))); }
-  .orbit-badge {
-    width: 46px; height: 46px; margin-left: -23px; margin-top: -23px;
-    border-radius: 9999px; background: #fff; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 20px rgba(15,23,42,0.1); border: 1px solid rgba(115,118,134,0.1);
-    transition: transform 0.3s ease;
-  }
-  .orbit-badge:hover { transform: scale(1.2); }
-
-  /* Rotating Word */
-  #rotateWord { display: inline-block; transition: opacity 0.4s ease, transform 0.4s ease; }
-  #rotateWord.word-swap { opacity: 0; transform: translateY(10px); }
-  .rotate-word-caret { display: inline-block; width: 3px; height: 0.8em; background: currentColor; margin-left: 4px; vertical-align: middle; animation: caretBlink 1s steps(1) infinite; }
-  @keyframes caretBlink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
-
-  webgl-shader { display: block; width: 100%; height: 100%; }
-  threejs-scene { display: block; width: 100%; height: 100%; }
-</style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="WebJugad Labs — A premium creative agency specializing in Web Design, Logo Design & Brand Identity. We craft bold, modern digital experiences that stand out." />
+  <meta name="keywords" content="web design agency, logo design, brand identity, creative agency, UI design, India" />
+  <meta property="og:title" content="WebJugad Labs — Creative Design Agency" />
+  <meta property="og:description" content="Bold, modern web & brand design for ambitious businesses." />
+  <meta property="og:type" content="website" />
+  <title>WebJugad Labs — Creative Design Agency</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-background text-on-background font-body selection:bg-primary-fixed selection:text-on-primary-fixed antialiased overflow-x-hidden">
-<!-- ================= NAV ================= -->
-<nav class="fixed top-0 w-full z-50 glass border-b border-outline-variant/20 shadow-low transition-transform duration-500" id="mainNav">
-<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto">
-<a class="font-display text-2xl font-bold text-on-background tracking-tight" href="#">WebJugad <span class="text-primary">Labs</span></a>
-<div class="hidden md:flex items-center gap-8">
-<a class="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#services">Services</a>
-<a class="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#work">Portfolio</a>
-<a class="text-sm font-medium text-on-surface-variant hover:text-primary transition-colors" href="#process">Process</a>
-<a class="bg-primary-container text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:scale-105 hover:shadow-high transition-all magnetic-btn" href="#contact"><span class="inline-block">Start a Project</span></a>
-</div>
-<button class="md:hidden p-2 text-on-background" id="menuBtn">
-<span class="material-symbols-outlined" id="menuIcon">menu</span>
-</button>
-</div>
-<div class="hidden flex-col gap-1 px-margin-mobile pb-6 glass border-t border-outline-variant/20" id="mobileMenu">
-<a class="mobile-link py-3 text-sm font-medium text-on-surface-variant" href="#services">Services</a>
-<a class="mobile-link py-3 text-sm font-medium text-on-surface-variant" href="#work">Portfolio</a>
-<a class="mobile-link py-3 text-sm font-medium text-on-surface-variant" href="#process">Process</a>
-<a class="mobile-link mt-2 bg-primary-container text-white px-6 py-3 rounded-full text-sm font-bold text-center" href="#contact">Start a Project</a>
-</div>
-</nav>
-<!-- ================= HERO ================= -->
-<section class="relative min-h-screen flex items-center pt-28 pb-20 overflow-hidden">
-<div class="absolute inset-0 w-full h-full">
-<!-- STITCH_SHADER_START:ANIMATION_2 class="" -->
-<div class="" style="display:block;width:100%;height:100%;min-height:200px;">
-<canvas id="shader-canvas-ANIMATION_2" style="display:block;width:100%;height:100%"></canvas>
-<script>
-(function() {
-  const canvas = document.getElementById('shader-canvas-ANIMATION_2');
 
-  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
-  // This fires on initial layout and whenever the element is resized.
-  function syncSize() {
-    const w = canvas.clientWidth  || 1280;
-    const h = canvas.clientHeight || 720;
-    if (canvas.width !== w || canvas.height !== h) {
-      canvas.width  = w;
-      canvas.height = h;
-    }
-  }
-  if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(syncSize).observe(canvas);
-  }
-  syncSize();
+<body>
 
-  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-  if (!gl) return;
-  const vs = `attribute vec2 a_position;
-varying vec2 v_texCoord;
-void main() {
-  v_texCoord = a_position * 0.5 + 0.5;
-  gl_Position = vec4(a_position, 0.0, 1.0);
-}`;
-  const fs = `precision highp float;
-varying vec2 v_texCoord;
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec2 u_mouse;
+  <!-- NAVBAR -->
+  <nav id="navbar" aria-label="Main navigation">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#hero" class="nav-logo" aria-label="WebJugad Labs Home">
+          <div class="nav-logo-icon">
+            <div class="nav-logo-icon">
+              <img src="logo.png" alt="WebJugad Labs Logo">
+            </div>
+          </div>
+          <div class="nav-logo-text">
+            Web<span>Jugad</span> Labs
+          </div>
+        </a>
 
-// Simplex 2D noise
-vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+        <ul class="nav-links" role="list">
+          <li><a href="#services">Services</a></li>
+          <li><a href="#portfolio">Portfolio</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
 
-float snoise(vec2 v){
-  const vec4 C = vec4(0.211324865405187, 0.366025403784439,
-           -0.577350269189626, 0.024390243902439);
-  vec2 i  = floor(v + dot(v, C.yy) );
-  vec2 x0 = v -   i + dot(i, C.xx);
-  vec2 i1;
-  i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-  vec4 x12 = x0.xyxy + C.xxzz;
-  x12.xy -= i1;
-  i = mod(i, 289.0);
-  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
-  + i.x + vec3(0.0, i1.x, 1.0 ));
-  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
-    dot(x12.zw,x12.zw)), 0.0);
-  m = m*m ;
-  m = m*m ;
-  vec3 x = 2.0 * fract(p * C.www) - 1.0;
-  vec3 h = abs(x) - 0.5;
-  vec3 a0 = x - floor(x + 0.5);
-  float m3 = m.x*dot(a0,a0) + m.y*dot(x12.xy,x12.xy) + m.z*dot(x12.zw,x12.zw);
-  return 130.0 * m3;
-}
+        <div class="nav-cta">
+          <a href="#contact" class="btn btn-primary" id="nav-cta-btn">Let's Talk <i data-lucide="arrow-right"></i></a>
+          <button class="hamburger" id="hamburger-btn" aria-label="Open menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
 
-void main() {
-    vec2 uv = v_texCoord;
-    vec2 mouse = u_mouse / u_resolution;
-    
-    float t = u_time * 0.1;
-    
-    // Create organic, flowing noise layers
-    float n1 = snoise(uv * 2.0 + t);
-    float n2 = snoise(uv * 4.0 - t * 0.8);
-    float n3 = snoise(uv * 1.5 + vec2(t, t * 0.5));
-    
-    // Distort UVs with noise
-    vec2 distortedUV = uv + vec2(n1, n2) * 0.05;
-    
-    // Color palette based on brand
-    vec3 base = vec3(0.98, 0.97, 1.0);       // Light background
-    vec3 primary = vec3(0.0, 0.29, 0.77);   // #004ac6
-    vec3 accent = vec3(0.74, 0.28, 0.0);    // #bc4800 (tertiary/orange)
-    
-    // Influence from mouse
-    float mouseDist = distance(uv, mouse);
-    float mouseCircle = 1.0 - smoothstep(0.0, 0.5, mouseDist);
-    
-    // Blend layers
-    vec3 color = base;
-    color = mix(color, primary, smoothstep(0.2, 0.8, n1 * 0.5 + 0.5) * 0.12);
-    color = mix(color, accent, smoothstep(0.4, 0.9, n2 * 0.5 + 0.5) * 0.06);
-    color = mix(color, primary, mouseCircle * 0.08);
-    
-    // Subtle grain
-    float grain = fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
-    color += (grain - 0.5) * 0.015;
+  <!-- Mobile Nav -->
+  <div class="mobile-nav" id="mobile-nav" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <a href="#services" class="mobile-nav-link">Services</a>
+    <a href="#portfolio" class="mobile-nav-link">Portfolio</a>
+    <a href="#process" class="mobile-nav-link">Process</a>
+    <a href="#contact" class="mobile-nav-link">Contact</a>
+    <a href="#contact" class="btn btn-primary" id="mobile-cta-btn" style="margin-top:1rem;">Let's Talk →</a>
+  </div>
 
-    gl_FragColor = vec4(color, 1.0);
-}`;
-  function cs(type, src) {
-    const s = gl.createShader(type);
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    return s;
-  }
-  const prog = gl.createProgram();
-  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
-  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
-  gl.linkProgram(prog);
-  gl.useProgram(prog);
-  const buf = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-  const pos = gl.getAttribLocation(prog, 'a_position');
-  gl.enableVertexAttribArray(pos);
-  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-  const uTime = gl.getUniformLocation(prog, 'u_time');
-  const uRes = gl.getUniformLocation(prog, 'u_resolution');
-  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+  <!-- HERO -->
+  <section id="hero" aria-labelledby="hero-title">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <canvas id="particles-canvas" aria-hidden="true"></canvas>
+    <div class="hero-shapes" aria-hidden="true">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
 
-  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
-  // Shaders that need normalized coords should use: u_mouse / u_resolution.
-  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
-  window.addEventListener('mousemove', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    if (rect.width && rect.height) {
-      const nx = (event.clientX - rect.left) / rect.width;
-      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
-      mouse.x = nx * canvas.width;
-      mouse.y = ny * canvas.height;
-    }
-  });
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge" aria-label="Creative Design Agency based in India">
+          <span class="hero-badge-dot" aria-hidden="true"></span>
+          Creative Design Agency · India 🇮🇳
+        </div>
 
-  function render(t) {
-    if (typeof ResizeObserver === 'undefined') syncSize();
-    gl.viewport(0, 0, canvas.width, canvas.height);
-    if (uTime) gl.uniform1f(uTime, t * 0.001);
-    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
-    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    requestAnimationFrame(render);
-  }
-  render(0);
-})();
-</script>
-</div>
-<!-- STITCH_SHADER_END:ANIMATION_2 -->
-</div>
-<div class="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop w-full grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
-<div class="md:col-span-7" data-reveal="">
-<span class="text-primary font-bold text-xs tracking-widest uppercase mb-4 block">Web · Design · AI Automation</span>
-<h1 class="font-display text-4xl md:text-7xl font-bold mb-6 text-on-background leading-[1.1]">
-        We Build Digital <span class="text-primary relative inline-block min-w-[200px]" id="rotateWordWrap"><span id="rotateWord">Experiences</span><span class="rotate-word-caret"></span></span> That Grow Businesses.
-      </h1>
-<p class="text-lg md:text-xl text-on-surface-variant mb-10 max-w-2xl leading-relaxed">
-        From premium websites to AI-powered automation, WebJugad Labs helps ambitious brands launch, scale, and stand apart online — with the precision of a studio that sweats every pixel.
-      </p>
-<div class="flex flex-col sm:flex-row gap-4">
-<a class="magnetic-btn bg-primary px-10 py-5 rounded-lg text-white font-bold text-center hover:shadow-high transition-all" href="#contact"><span class="inline-block">Start Your Project</span></a>
-<a class="magnetic-btn border-2 border-on-background px-10 py-5 rounded-lg font-bold text-center hover:bg-on-background hover:text-white transition-all" href="#work"><span class="inline-block">View Our Work</span></a>
-</div>
-</div>
-<div class="md:col-span-5 h-[420px] md:h-[550px] relative" data-reveal="">
-<!-- STITCH_THREEJS_START:ANIMATION_3 class="" -->
-<div class="" style="display:block;width:100%;height:100%;min-height:200px;">
-<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
-<div id="threejs-container-ANIMATION_3" style="width:100%;height:100%"></div>
-<script>
-(function() {
-  const container = document.getElementById('threejs-container-ANIMATION_3');
-  const devicePixelRatio = window.devicePixelRatio || 1;
-  // Initialize Three.js scene
-const width = container.clientWidth || window.innerWidth;
-const height = container.clientHeight || window.innerHeight;
+        <h1 class="hero-title" id="hero-title">
+          We Design
+          <span class="line-2 gradient-text-hero">Digital Experiences</span>
+          That Convert.
+        </h1>
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-camera.position.z = 8;
+        <p class="hero-desc">
+          WebJugad Labs crafts bold, memorable websites and brand identities for ambitious businesses. From
+          pixel-perfect UI to strategic brand design — we make you look unforgettable.
+        </p>
 
-const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(width, height);
-container.appendChild(renderer.domElement);
+        <div class="hero-actions">
+          <a href="#portfolio" class="btn btn-primary" id="hero-view-work-btn">
+            View Our Work
+            <span aria-hidden="true"><i data-lucide="arrow-down"></i></span>
+          </a>
+          <a href="#contact" class="btn btn-outline" id="hero-contact-btn">
+            Start a Project <i data-lucide="arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-const group = new THREE.Group();
-scene.add(group);
+  <!-- SERVICES -->
+  <section id="services" aria-labelledby="services-title">
+    <div class="container">
+      <div class="services-header reveal">
+        <div class="section-label" aria-label="Section: What We Do">What We Do</div>
+        <h2 class="section-title" id="services-title">
+          Services Built for
+          <span class="gradient-text">Modern Brands</span>
+        </h2>
+        <p class="section-subtitle">
+          We don't just make things look pretty — we craft strategic design that drives real business results.
+        </p>
+      </div>
 
-// Core: Tech Crystal (Icosahedron)
-const geometry = new THREE.IcosahedronGeometry(2, 1);
-const material = new THREE.MeshPhongMaterial({
-    color: 0x004ac6,
-    emissive: 0x001a4d,
-    specular: 0xffffff,
-    shininess: 100,
-    transparent: true,
-    opacity: 0.3,
-    flatShading: true
-});
-const crystal = new THREE.Mesh(geometry, material);
-group.add(crystal);
+      <div class="services-grid">
 
-// Wireframe Shell
-const wireframeGeo = new THREE.IcosahedronGeometry(2.05, 1);
-const wireframeMat = new THREE.LineBasicMaterial({ 
-    color: 0x2563eb, 
-    transparent: true, 
-    opacity: 0.6 
-});
-const wireframe = new THREE.LineSegments(new THREE.EdgesGeometry(wireframeGeo), wireframeMat);
-group.add(wireframe);
+        <!-- Web Design -->
+        <article class="service-card reveal reveal-delay-1" id="service-web-design" tabindex="0"
+          aria-label="Service: Web Design">
+          <div class="service-icon-wrap">
+            <i data-lucide="monitor-smartphone"></i>
+          </div>
+          <h3 class="service-card-title">Web Design</h3>
+          <p class="service-card-desc">
+            Stunning, conversion-focused websites built with modern design principles. From landing pages to full web
+            apps.
+          </p>
+          <ul class="service-features" role="list">
+            <li>Landing Pages & Microsites</li>
+            <li>Business & Portfolio Websites</li>
+            <li>UI/UX Design & Prototypes</li>
+            <li>Mobile-First Responsive Design</li>
+            <li>Performance Optimized</li>
+          </ul>
+          <div class="service-arrow" aria-hidden="true"><i data-lucide="arrow-right"></i></div>
+        </article>
 
-// Inner Glowing Core
-const coreGeo = new THREE.SphereGeometry(0.8, 32, 32);
-const coreMat = new THREE.MeshPhongMaterial({
-    color: 0xffffff,
-    emissive: 0x2563eb,
-    emissiveIntensity: 2,
-    transparent: true,
-    opacity: 0.8
-});
-const core = new THREE.Mesh(coreGeo, coreMat);
-group.add(core);
+        <!-- Logo Design -->
+        <article class="service-card reveal reveal-delay-2" id="service-logo-design" tabindex="0"
+          aria-label="Service: Logo & Identity Design">
+          <div class="service-icon-wrap">
+            <i data-lucide="pen-tool"></i>
+          </div>
+          <h3 class="service-card-title">Logo & Identity</h3>
+          <p class="service-card-desc">
+            Memorable, timeless logos crafted to represent your brand's essence. We deliver concepts that work
+            everywhere.
+          </p>
+          <ul class="service-features" role="list">
+            <li>Primary & Alternate Logo Marks</li>
+            <li>Icon & Symbol Design</li>
+            <li>Typography & Color Palette</li>
+            <li>Logo Usage Guidelines</li>
+            <li>All File Formats (SVG, PNG, PDF)</li>
+          </ul>
+          <div class="service-arrow" aria-hidden="true"><i data-lucide="arrow-right"></i></div>
+        </article>
 
-// Particles System
-const particlesCount = 300;
-const positions = new Float32Array(particlesCount * 3);
-const particleGeometry = new THREE.BufferGeometry();
+        <!-- Brand Design -->
+        <article class="service-card reveal reveal-delay-3" id="service-brand-design" tabindex="0"
+          aria-label="Service: Brand Design">
+          <div class="service-icon-wrap">
+            <i data-lucide="palette"></i>
+          </div>
+          <h3 class="service-card-title">Brand Design</h3>
+          <p class="service-card-desc">
+            Complete brand identity systems that tell a cohesive story across all touchpoints — digital and print.
+          </p>
+          <ul class="service-features" role="list">
+            <li>Brand Strategy & Positioning</li>
+            <li>Visual Identity System</li>
+            <li>Brand Guidelines Document</li>
+            <li>Social Media Kit</li>
+            <li>Print & Collateral Design</li>
+          </ul>
+          <div class="service-arrow" aria-hidden="true"><i data-lucide="arrow-right"></i></div>
+        </article>
 
-for (let i = 0; i < particlesCount; i++) {
-    const r = 3 + Math.random() * 2;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos((Math.random() * 2) - 1);
-    
-    positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-    positions[i * 3 + 2] = r * Math.cos(phi);
-}
+      </div>
+    </div>
+  </section>
 
-particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-const particleMaterial = new THREE.PointsMaterial({
-    color: 0x2563eb,
-    size: 0.05,
-    transparent: true,
-    opacity: 0.8,
-    sizeAttenuation: true
-});
-const particles = new THREE.Points(particleGeometry, particleMaterial);
-group.add(particles);
+  <!-- PORTFOLIO -->
+  <section id="portfolio" aria-labelledby="portfolio-title">
+    <div class="container">
+      <div class="portfolio-header reveal">
+        <div class="section-label" aria-label="Section: Our Work">Our Work</div>
+        <h2 class="section-title" id="portfolio-title">
+          Projects We're
+          <span class="gradient-text">Proud Of</span>
+        </h2>
+        <p class="section-subtitle">
+          A glimpse into the work we've created for brands that dared to stand out.
+        </p>
 
-// Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambientLight);
+        <div class="portfolio-filters" role="tablist" aria-label="Portfolio filter">
+          <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true"
+            id="filter-all">All</button>
+          <button class="filter-btn" data-filter="web" role="tab" aria-selected="false" id="filter-web">Web
+            Design</button>
+          <button class="filter-btn" data-filter="brand" role="tab" aria-selected="false" id="filter-brand">Brand
+            Design</button>
+          <button class="filter-btn" data-filter="logo" role="tab" aria-selected="false" id="filter-logo">Logo
+            Design</button>
+        </div>
+      </div>
 
-const pointLight = new THREE.PointLight(0x2563eb, 2, 10);
-pointLight.position.set(5, 5, 5);
-scene.add(pointLight);
+      <div class="portfolio-grid" id="portfolio-grid" role="list">
 
-// Interaction
-let mouseX = 0;
-let mouseY = 0;
-let targetX = 0;
-let targetY = 0;
+        <article class="portfolio-item reveal reveal-delay-1" data-category="web" role="listitem"
+          aria-label="Project: Smart Vision School">
+          <div class="portfolio-img-wrap">
+            <img src="oneview.png" alt="Smart Vision School — Web Design project by WebJugad Labs" loading="lazy" />
+            <div class="portfolio-overlay">
+              <a href="https://smartvisionschool.vercel.app" target="_blank" rel="noopener noreferrer"
+                class="portfolio-overlay-btn">
+                View Live Website
+                <i data-lucide="external-link"></i>
+              </a>
+            </div>
+          </div>
+          <div class="portfolio-meta">
+            <span class="portfolio-tag">Web Design - School Website</span>
+            <h3 class="portfolio-name">Smart Vision School</h3>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
 
-window.addEventListener('mousemove', (e) => {
-    mouseX = (e.clientX - window.innerWidth / 2) / 1000;
-    mouseY = (e.clientY - window.innerHeight / 2) / 1000;
-});
+  <!-- PROCESS -->
+  <section id="process" aria-labelledby="process-title">
+    <div class="container">
+      <div class="process-header reveal">
+        <div class="section-label" aria-label="Section: How We Work">How We Work</div>
+        <h2 class="section-title" id="process-title">
+          Our <span class="gradient-text">Creative Process</span>
+        </h2>
+        <p class="section-subtitle">
+          A proven workflow that ensures great outcomes every time — no guesswork, just results.
+        </p>
+      </div>
 
-// Animation Loop
-const clock = new THREE.Clock();
+      <div class="process-steps">
 
-function animate() {
-    requestAnimationFrame(animate);
-    const delta = clock.getDelta();
-    const elapsed = clock.getElapsedTime();
+        <div class="process-step reveal reveal-delay-1" id="process-step-discover">
+          <div class="process-num" aria-label="Step 1">01</div>
+          <span class="process-icon" aria-hidden="true"><i data-lucide="search"></i></span>
+          <h3 class="process-step-title">Discover</h3>
+          <p class="process-step-desc">We dive deep into your business, audience, and goals to build a strong creative
+            foundation.</p>
+        </div>
 
-    // Smooth rotation
-    targetX += (mouseX - targetX) * 0.05;
-    targetY += (mouseY - targetY) * 0.05;
-    
-    group.rotation.y += delta * 0.2 + targetX;
-    group.rotation.x += delta * 0.1 + targetY;
-    
-    // Core pulsing
-    core.scale.setScalar(1 + Math.sin(elapsed * 2) * 0.1);
-    
-    // Float effect
-    group.position.y = Math.sin(elapsed * 0.5) * 0.2;
-    
-    // Particles slow orbit
-    particles.rotation.y -= delta * 0.05;
+        <div class="process-step reveal reveal-delay-2" id="process-step-strategize">
+          <div class="process-num" aria-label="Step 2">02</div>
+          <span class="process-icon" aria-hidden="true"><i data-lucide="compass"></i></span>
+          <h3 class="process-step-title">Strategize</h3>
+          <p class="process-step-desc">We map out a clear visual and content strategy aligned with your brand's
+            positioning.</p>
+        </div>
 
-    renderer.render(scene, camera);
-}
+        <div class="process-step reveal reveal-delay-3" id="process-step-design">
+          <div class="process-num" aria-label="Step 3">03</div>
+          <span class="process-icon" aria-hidden="true"><i data-lucide="paintbrush"></i></span>
+          <h3 class="process-step-title">Design</h3>
+          <p class="process-step-desc">Our designers craft stunning visuals — from wireframes to polished, pixel-perfect
+            designs.</p>
+        </div>
 
-animate();
+        <div class="process-step reveal reveal-delay-4" id="process-step-deliver">
+          <div class="process-num" aria-label="Step 4">04</div>
+          <span class="process-icon" aria-hidden="true"><i data-lucide="rocket"></i></span>
+          <h3 class="process-step-title">Deliver</h3>
+          <p class="process-step-desc">We hand over clean files and live assets, with support to ensure a smooth launch.
+          </p>
+        </div>
 
-// Resize Handler
-window.addEventListener('resize', () => {
-    const w = container.clientWidth || window.innerWidth;
-    const h = container.clientHeight || window.innerHeight;
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-    renderer.setSize(w, h);
-});
-})();
-</script>
-</div>
-<!-- STITCH_THREEJS_END:ANIMATION_3 -->
-</div>
-</div>
-<div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-on-surface-variant opacity-60">
-<span class="text-[10px] uppercase tracking-[0.2em] font-bold">Scroll</span>
-<span class="material-symbols-outlined text-xl animate-bounce">arrow_downward</span>
-</div>
-</section>
-<!-- ================= TECH ORBIT ================= -->
-<section class="relative py-stack-lg bg-surface-container-low border-y border-outline-variant/10 overflow-hidden" id="techOrbitSection">
-<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-12 gap-gutter items-center">
-<div class="md:col-span-5" data-reveal="">
-<span class="text-primary font-bold text-xs tracking-widest uppercase block mb-4">Powered by</span>
-<h2 class="font-display text-3xl md:text-5xl font-bold mb-6">A Modern Stack, Orbiting One Goal</h2>
-<p class="text-on-surface-variant text-lg max-w-md leading-relaxed">Every tool in our stack is chosen for one reason — it helps ship faster without cutting corners on quality.</p>
-</div>
-<div class="md:col-span-7 flex justify-center py-10" data-reveal="">
-<div class="orbit-stage">
-<div class="orbit-hub">
-<span class="material-symbols-outlined text-4xl">bolt</span>
-</div>
-<div class="orbit-ring orbit-ring-1">
-<div class="orbit-item" style="--a:0deg"><div class="orbit-badge" title="HTML5">
-<svg height="24" viewbox="0 0 24 24" width="24"><path d="M3 2h18l-1.6 18L12 22l-7.4-2L3 2z" fill="#E44D26"></path><path d="M12 3.4V20.7l5.9-1.6L19.3 3.4H12z" fill="#F16529"></path><path d="M12 8.3H8.7l.2 2.4H12v2.4H9.1l.2 2.1L12 15.9v2.5l-4.3-1.2-.3-3.3h2.3l.1 1.3 2.2.6v-2.6H9l-.5-5.6H12v2.4z" fill="#fff" opacity=".9"></path></svg>
-</div></div>
-<div class="orbit-item" style="--a:90deg"><div class="orbit-badge" title="CSS3">
-<svg height="24" viewbox="0 0 24 24" width="24"><path d="M3 2h18l-1.6 18L12 22l-7.4-2L3 2z" fill="#1572B6"></path><path d="M12 3.4V20.7l5.9-1.6L19.3 3.4H12z" fill="#33A9DC"></path><path d="M12 8.3H8.9l.2 2h2.9v2H9.3l.3 3 2.4.7v2.1l-4.3-1.2-.4-4.5h2v-1H7l-.5-5.6H12v2.5z" fill="#fff" opacity=".9"></path></svg>
-</div></div>
-<div class="orbit-item" style="--a:180deg"><div class="orbit-badge" title="JavaScript">
-<svg height="24" viewbox="0 0 24 24" width="24"><rect fill="#F7DF1E" height="24" rx="5" width="24"></rect><text fill="#000" font-family="Arial, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle" x="12" y="16.5">JS</text></svg>
-</div></div>
-<div class="orbit-item" style="--a:270deg"><div class="orbit-badge" title="React.js">
-<svg height="26" viewbox="-11.5 -10.23 23 20.46" width="26"><circle fill="#61DAFB" r="2.05"></circle><g fill="none" stroke="#61DAFB" stroke-width="1"><ellipse rx="11" ry="4.2"></ellipse><ellipse rx="11" ry="4.2" transform="rotate(60)"></ellipse><ellipse rx="11" ry="4.2" transform="rotate(120)"></ellipse></g></svg>
-</div></div>
-</div>
-<div class="orbit-ring orbit-ring-2">
-<div class="orbit-item" style="--a:18deg"><div class="orbit-badge" title="Express.js">
-<svg height="24" viewbox="0 0 24 24" width="24"><rect fill="#111" height="24" rx="5" width="24"></rect><text fill="#fff" font-family="Arial, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" x="12" y="16">ex</text></svg>
-</div></div>
-<div class="orbit-item" style="--a:90deg"><div class="orbit-badge" title="Supabase">
-<svg height="22" viewbox="0 0 24 24" width="22"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="#3ECF8E"></path></svg>
-</div></div>
-<div class="orbit-item" style="--a:162deg"><div class="orbit-badge" title="MongoDB">
-<svg height="20" viewbox="0 0 24 24" width="20"><path d="M12 2c3.2 3.6 5.2 7.4 5.2 11.2C17.2 17.5 14.9 21 12 22c-2.9-1-5.2-4.5-5.2-8.8C6.8 9.4 8.8 5.6 12 2z" fill="#47A248"></path><path d="M12 6.5v13" fill="#fff" opacity=".55"></path></svg>
-</div></div>
-<div class="orbit-item" style="--a:234deg"><div class="orbit-badge" title="Tailwind CSS">
-<svg height="26" viewbox="0 0 24 24" width="26"><path d="M6 9.5c1-3 3-4.5 6-4.5 3 0 4.6 1.5 5.5 4.4-1-1.1-2.1-1.5-3.6-1.2-.9.2-1.6.9-2.3 1.6-1 1.1-2.2 2.4-4.8 2.4-3 0-4.6-1.5-5.5-4.4 1 1.1 2.1 1.5 3.6 1.2.9-.2 1.6-.9 1.1-1.5z" fill="#38BDF8"></path><path d="M1 15.5c1-3 3-4.5 6-4.5 3 0 4.6 1.5 5.5 4.4-1-1.1-2.1-1.5-3.6-1.2-.9.2-1.6.9-2.3 1.6-1 1.1-2.2 2.4-4.8 2.4-3 0-4.6-1.5-5.5-4.4 1 1.1 2.1 1.5 3.6 1.2.9-.2.5-.6 1.1.5z" fill="#38BDF8"></path></svg>
-</div></div>
-<div class="orbit-item" style="--a:306deg"><div class="orbit-badge" title="JWT Authentication">
-<svg height="20" viewbox="0 0 24 24" width="20"><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="#FB015B" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><rect fill="#FB015B" height="9" rx="2" width="14" x="5" y="11"></rect><circle cx="12" cy="15" fill="#fff" r="1.6"></circle></svg>
-</div></div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- ================= SERVICES ================= -->
-<section class="py-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop" id="services">
-<div class="text-center mb-20" data-reveal="">
-<span class="text-primary font-bold text-xs tracking-widest uppercase">Expertise</span>
-<h2 class="font-display text-4xl md:text-6xl font-bold mt-4 mb-6">Tailored Digital Solutions</h2>
-<p class="text-on-surface-variant max-w-xl mx-auto text-lg">Specializing in the intersection of high-end aesthetics and high-performance engineering.</p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter max-w-4xl mx-auto">
-<div class="tilt-card p-12 glass border border-outline-variant/30 rounded-lg hover:border-primary shadow-low hover:shadow-medium" data-reveal="">
-<span class="material-symbols-outlined text-primary text-4xl mb-6 bg-primary-fixed/40 p-4 rounded-md inline-block">web</span>
-<h3 class="font-display text-2xl font-bold mb-4">Website Design</h3>
-<p class="text-on-surface-variant leading-relaxed">Fast, responsive, conversion-optimized websites built with clean architecture and pixel-perfect craft — from single landing pages to full multi-page platforms.</p>
-</div>
-<div class="tilt-card p-12 glass border border-outline-variant/30 rounded-lg hover:border-primary shadow-low hover:shadow-medium" data-reveal="">
-<span class="material-symbols-outlined text-primary text-4xl mb-6 bg-primary-fixed/40 p-4 rounded-md inline-block">diamond</span>
-<h3 class="font-display text-2xl font-bold mb-4">Logo &amp; Brand Design</h3>
-<p class="text-on-surface-variant leading-relaxed">Distinct visual identities — logos, color systems, and brand guidelines that make your business instantly recognizable at every touchpoint.</p>
-</div>
-</div>
-</section>
-<!-- ================= FEATURED WORK ================= -->
-<section class="py-stack-xl max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop" id="work">
-<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8" data-reveal="">
-<div class="max-w-2xl">
-<span class="text-primary font-bold text-xs tracking-widest uppercase">Our Work</span>
-<h2 class="font-display text-4xl md:text-6xl font-bold mt-4">Portfolio</h2>
-</div>
-<a class="group flex items-center gap-2 font-bold text-sm text-on-background hover:text-primary transition-colors" href="#contact">
-      Start a similar project <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-</a>
-</div>
-<div class="space-y-stack-lg">
-<!-- Case 1 -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center" data-reveal="">
-<div class="mockup-window parallax-target">
-<div class="mockup-inner rounded-lg overflow-hidden bg-on-background shadow-medium aspect-[4/3] relative p-6 flex flex-col gap-4">
-<div class="flex items-center gap-2 mb-2">
-<span class="w-3 h-3 rounded-full bg-error/70"></span>
-<span class="w-3 h-3 rounded-full bg-tertiary/70"></span>
-<span class="w-3 h-3 rounded-full bg-emerald-400/70"></span>
-</div>
-<div class="grid grid-cols-3 gap-4 flex-1">
-<div class="col-span-2 bg-white/5 rounded-md p-4 flex flex-col justify-between">
-<span class="text-[10px] text-white/50 uppercase tracking-widest">Portfolio value</span>
-<span class="font-display text-4xl text-white font-bold">$4.82M</span>
-<div class="flex items-end gap-1 h-16 mt-2">
-<div class="w-2 bg-primary-fixed rounded-t" style="height:40%"></div>
-<div class="w-2 bg-primary-fixed rounded-t" style="height:65%"></div>
-<div class="w-2 bg-primary-fixed rounded-t" style="height:50%"></div>
-<div class="w-2 bg-tertiary-fixed rounded-t" style="height:85%"></div>
-<div class="w-2 bg-primary-fixed rounded-t" style="height:70%"></div>
-<div class="w-2 bg-primary-fixed rounded-t" style="height:95%"></div>
-</div>
-</div>
-<div class="flex flex-col gap-4">
-<div class="bg-white/5 rounded-md p-3 flex-1 flex flex-col justify-center items-center">
-<span class="font-display text-2xl text-white font-bold">+40%</span>
-<span class="text-[10px] text-white/50 uppercase">Efficiency</span>
-</div>
-<div class="bg-white/5 rounded-md p-3 flex-1 flex flex-col justify-center items-center">
-<span class="font-display text-2xl text-white font-bold">2.5s</span>
-<span class="text-[10px] text-white/50 uppercase">Load time</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="lg:pl-10">
-<h3 class="font-display text-3xl md:text-5xl font-bold mb-6">Fintech Dashboard</h3>
-<div class="space-y-6">
-<div>
-<span class="font-bold text-primary text-sm uppercase tracking-widest block mb-1">Challenge</span>
-<p class="text-on-surface-variant">Simplify complex financial data into an interface asset managers could actually use.</p>
-</div>
-<div>
-<span class="font-bold text-primary text-sm uppercase tracking-widest block mb-1">Solution</span>
-<p class="text-on-surface-variant">A custom analytics platform with real-time data streaming and predictive insights.</p>
-</div>
-<div>
-<span class="font-bold text-primary text-sm uppercase tracking-widest block mb-1">Result</span>
-<p class="text-on-surface-variant font-display text-2xl font-bold">40% increase in efficiency, 2.5s load time.</p>
-</div>
-</div>
-</div>
-</div>
-<!-- Case 2 -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center" data-reveal="">
-<div class="mockup-window lg:order-2 parallax-target">
-<div class="mockup-inner rounded-lg overflow-hidden bg-surface-container-lowest border border-outline-variant/30 shadow-medium aspect-[4/3] relative p-6 flex flex-col gap-4">
-<div class="flex justify-between items-center">
-<span class="font-display text-xs font-bold tracking-widest uppercase">Atelier No.4</span>
-<span class="material-symbols-outlined text-on-surface-variant">shopping_bag</span>
-</div>
-<div class="grid grid-cols-3 gap-3 flex-1">
-<div class="rounded-md bg-gradient-to-br from-primary-fixed to-primary-container col-span-2 row-span-2"></div>
-<div class="rounded-md bg-tertiary-fixed"></div>
-<div class="rounded-md bg-surface-container-high"></div>
-</div>
-<div class="flex justify-between items-center pt-2 border-t border-outline-variant/30">
-<span class="text-[10px] text-on-surface-variant uppercase tracking-widest">Autumn Collection</span>
-<span class="font-display text-xs text-primary font-bold">View →</span>
-</div>
-</div>
-</div>
-<div class="lg:pr-10 lg:order-1">
-<h3 class="font-display text-3xl md:text-5xl font-bold mb-6">Luxury E-commerce Platform</h3>
-<div class="space-y-6">
-<div>
-<span class="font-bold text-primary text-sm uppercase tracking-widest block mb-1">Challenge</span>
-<p class="text-on-surface-variant">Move a boutique retailer from in-store only to a global, digital-first experience.</p>
-</div>
-<div>
-<span class="font-bold text-primary text-sm uppercase tracking-widest block mb-1">Solution</span>
-<p class="text-on-surface-variant">Headless commerce architecture with immersive, editorial product storytelling.</p>
-</div>
-<div>
-<span class="font-bold text-primary text-sm uppercase tracking-widest block mb-1">Result</span>
-<p class="text-on-surface-variant font-display text-2xl font-bold">150% revenue growth in year one.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- ================= PROCESS ================= -->
-<section class="py-stack-xl bg-on-background text-white overflow-hidden" id="process">
-<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-<div class="mb-20" data-reveal="">
-<span class="text-primary-fixed font-bold text-xs tracking-widest uppercase block mb-4">How we work</span>
-<h2 class="font-display text-4xl md:text-6xl font-bold">The Path to Digital Excellence</h2>
-</div>
-<div class="flex overflow-x-auto pb-10 gap-10 snap-x hide-scrollbar" data-reveal="">
-<div class="min-w-[280px] snap-start">
-<span class="text-7xl font-display text-white/10 font-bold block mb-4">01</span>
-<h4 class="font-display text-2xl font-bold mb-4 text-primary-fixed">Discovery</h4>
-<p class="text-outline-variant leading-relaxed">Deep dive into your business goals, target audience, and market landscape.</p>
-</div>
-<div class="min-w-[280px] snap-start">
-<span class="text-7xl font-display text-white/10 font-bold block mb-4">02</span>
-<h4 class="font-display text-2xl font-bold mb-4 text-primary-fixed">Strategy</h4>
-<p class="text-outline-variant leading-relaxed">Defining the technical roadmap and creative direction for success.</p>
-</div>
-<div class="min-w-[280px] snap-start">
-<span class="text-7xl font-display text-white/10 font-bold block mb-4">03</span>
-<h4 class="font-display text-2xl font-bold mb-4 text-primary-fixed">Design</h4>
-<p class="text-outline-variant leading-relaxed">Crafting pixel-perfect interfaces that reflect your brand's unique identity.</p>
-</div>
-<div class="min-w-[280px] snap-start">
-<span class="text-7xl font-display text-white/10 font-bold block mb-4">04</span>
-<h4 class="font-display text-2xl font-bold mb-4 text-primary-fixed">Development</h4>
-<p class="text-outline-variant leading-relaxed">Bringing designs to life with clean, scalable, high-performance code.</p>
-</div>
-<div class="min-w-[280px] snap-start">
-<span class="text-7xl font-display text-white/10 font-bold block mb-4">05</span>
-<h4 class="font-display text-2xl font-bold mb-4 text-primary-fixed">Testing</h4>
-<p class="text-outline-variant leading-relaxed">Rigorous quality assurance across all devices and edge cases.</p>
-</div>
-<div class="min-w-[280px] snap-start">
-<span class="text-7xl font-display text-white/10 font-bold block mb-4">06</span>
-<h4 class="font-display text-2xl font-bold mb-4 text-primary-fixed">Launch</h4>
-<p class="text-outline-variant leading-relaxed">Seamless deployment and transition to your live environment.</p>
-</div>
-</div>
-</div>
-</section>
-<!-- ================= CONTACT ================= -->
-<section class="py-stack-xl bg-white relative overflow-hidden" id="contact">
-<div class="absolute top-0 right-0 w-1/2 h-full bg-primary-fixed/10 -skew-x-12 translate-x-20 pointer-events-none"></div>
-<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-stack-lg">
-<div data-reveal="">
-<h2 class="font-display text-4xl md:text-6xl font-bold mb-6 leading-tight">Let's build something <span class="text-primary">remarkable</span> together.</h2>
-<p class="text-on-surface-variant text-lg mb-10 max-w-lg leading-relaxed">Ready to elevate your digital presence? Fill out the form or reach out directly.</p>
-<div class="space-y-6">
-<div class="flex items-center gap-4">
-<span class="material-symbols-outlined bg-primary text-white p-3 rounded-full">mail</span>
-<div>
-<span class="text-[10px] uppercase font-bold text-on-surface-variant block">Email Us</span>
-<span class="font-bold text-lg">hello@webjugad.labs</span>
-</div>
-</div>
-<a class="flex items-center gap-4 group w-fit" href="#">
-<span class="material-symbols-outlined bg-[#0A66C2] text-white p-3 rounded-full">work</span>
-<div>
-<span class="text-[10px] uppercase font-bold text-on-surface-variant block">LinkedIn</span>
-<span class="font-bold text-lg group-hover:text-primary transition-colors">Connect with us</span>
-</div>
-</a>
-<a class="flex items-center gap-4 group w-fit" href="#">
-<span class="material-symbols-outlined bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white p-3 rounded-full">photo_camera</span>
-<div>
-<span class="text-[10px] uppercase font-bold text-on-surface-variant block">Instagram</span>
-<span class="font-bold text-lg group-hover:text-primary transition-colors">Follow along</span>
-</div>
-</a>
-</div>
-</div>
-<div class="glass p-8 md:p-10 rounded-xl shadow-high border border-outline-variant/30" data-reveal="">
-<form class="space-y-6" id="contactForm">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div>
-<label class="text-xs font-bold uppercase text-on-surface-variant block mb-2" for="fullName">Full Name</label>
-<input class="w-full bg-surface-container-low border-none rounded-md p-4 focus:ring-2 focus:ring-primary transition-all outline-none" id="fullName" placeholder="John Doe" required="" type="text"/>
-</div>
-<div>
-<label class="text-xs font-bold uppercase text-on-surface-variant block mb-2" for="emailAddr">Email Address</label>
-<input class="w-full bg-surface-container-low border-none rounded-md p-4 focus:ring-2 focus:ring-primary transition-all outline-none" id="emailAddr" placeholder="john@example.com" required="" type="email"/>
-</div>
-</div>
-<div>
-<label class="text-xs font-bold uppercase text-on-surface-variant block mb-2" for="projectType">Project Type</label>
-<select class="w-full bg-surface-container-low border-none rounded-md p-4 focus:ring-2 focus:ring-primary transition-all outline-none" id="projectType">
-<option>Website Design</option>
-<option>Logo &amp; Brand Design</option>
-<option>Other</option>
-</select>
-</div>
-<div>
-<label class="text-xs font-bold uppercase text-on-surface-variant block mb-2" for="msg">Message</label>
-<textarea class="w-full bg-surface-container-low border-none rounded-md p-4 h-32 focus:ring-2 focus:ring-primary transition-all outline-none" id="msg" placeholder="Tell us about your project..."></textarea>
-</div>
-<button class="w-full bg-primary text-white py-5 rounded-md font-bold uppercase text-sm hover:bg-on-primary-fixed-variant transition-colors shadow-high magnetic-btn" type="submit"><span>Send Inquiry</span></button>
-<p class="hidden text-center text-emerald-600 font-bold text-sm" id="formSuccess">Thanks — we'll be in touch shortly.</p>
-</form>
-</div>
-</div>
-</div>
-</section>
-<!-- ================= FOOTER ================= -->
-<footer class="bg-surface-container-lowest border-t border-outline-variant w-full">
-<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter px-margin-mobile md:px-margin-desktop py-stack-xl max-w-container-max mx-auto">
-<div class="md:col-span-4">
-<a class="font-display text-2xl font-bold text-on-background block mb-6" href="#">WebJugad Labs</a>
-<p class="text-on-surface-variant max-w-xs leading-relaxed">Building the digital future with precision, passion, and purpose.</p>
-</div>
-<div class="md:col-span-2">
-<h5 class="font-bold mb-6 text-sm uppercase tracking-widest">Services</h5>
-<ul class="space-y-4">
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="#services">Website Design</a></li>
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="#services">Logo &amp; Brand Design</a></li>
-</ul>
-</div>
-<div class="md:col-span-2">
-<h5 class="font-bold mb-6 text-sm uppercase tracking-widest">Company</h5>
-<ul class="space-y-4">
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="#work">Portfolio</a></li>
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="#process">Our Process</a></li>
-</ul>
-</div>
-<div class="md:col-span-2">
-<h5 class="font-bold mb-6 text-sm uppercase tracking-widest">Social</h5>
-<ul class="space-y-4">
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="#">LinkedIn</a></li>
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="#">Instagram</a></li>
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="mailto:hello@webjugad.labs">Email</a></li>
-</ul>
-</div>
-<div class="md:col-span-2">
-<h5 class="font-bold mb-6 text-sm uppercase tracking-widest">Legal</h5>
-<ul class="space-y-4">
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="#">Privacy Policy</a></li>
-<li><a class="text-on-surface-variant hover:text-primary transition-all text-sm block" href="#">Terms of Service</a></li>
-</ul>
-</div>
-<div class="md:col-span-12 pt-10 border-t border-outline-variant/20 mt-10 flex flex-col md:flex-row justify-between gap-4">
-<p class="text-xs text-on-surface-variant font-medium">© 2026 WebJugad Labs. All rights reserved.</p>
-<p class="text-xs text-on-surface-variant font-medium">Designed &amp; built with the Elite Lab System.</p>
-</div>
-</div>
-</footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-  // Robust Intersection Observer for data-reveal
-  const observerOptions = {
-    threshold: 0.15,
-    rootMargin: '0px 0px -50px 0px'
-  };
+      </div>
+    </div>
+  </section>
 
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry, index) => {
-      if (entry.isIntersecting) {
-        // Staggered reveal
-        setTimeout(() => {
-          entry.target.classList.add('revealed');
-        }, index * 100);
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
+  <!-- CTA BANNER -->
+  <section id="cta" aria-labelledby="cta-title">
+    <div class="container">
+      <div class="cta-inner reveal">
+        <div class="cta-glow" aria-hidden="true"></div>
+        <div class="cta-content">
+          <div class="section-label" style="margin: 0 auto 1.5rem; display: table;">Ready?</div>
+          <h2 class="cta-title" id="cta-title">
+            Your Brand Deserves to
+            <span class="gradient-text"> Stand Out.</span>
+          </h2>
+          <p class="cta-subtitle">
+            Let's build something extraordinary together. Drop us a message and we'll get back to you within 24 hours.
+          </p>
+          <div class="cta-actions">
+            <a href="#contact" class="btn btn-primary" id="cta-start-project-btn">
+              Start a Project <i data-lucide="arrow-right"></i>
+            </a>
+            <a href="mailto:webjugadlabs@gmail.com" class="btn btn-outline" id="cta-email-btn">
+              <i data-lucide="mail"></i> webjugaadlabs@gmail.com
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+  <!-- CONTACT -->
+  <section id="contact" aria-labelledby="contact-title">
+    <div class="container">
+      <div class="contact-wrapper">
 
-  // Magnetic Button Effect
-  document.querySelectorAll('.magnetic-btn').forEach(btn => {
-    btn.addEventListener('mousemove', (e) => {
-      const rect = btn.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      
-      btn.style.transform = `translate(${x * 0.2}px, ${y * 0.3}px)`;
-      const inner = btn.querySelector('span');
-      if (inner) inner.style.transform = `translate(${x * 0.1}px, ${y * 0.15}px)`;
-    });
+        <!-- Left: Info -->
+        <div class="contact-info reveal">
+          <div class="section-label">Get in Touch</div>
+          <h2 class="section-title" id="contact-title">
+            Let's Build
+            <span class="gradient-text">Together</span>
+          </h2>
+          <p class="section-subtitle">
+            Have a project in mind? We'd love to hear about it. Reach out and let's start a conversation.
+          </p>
 
-    btn.addEventListener('mouseleave', () => {
-      btn.style.transform = `translate(0, 0)`;
-      const inner = btn.querySelector('span');
-      if (inner) inner.style.transform = `translate(0, 0)`;
-    });
-  });
+          <div class="contact-details" role="list">
+            <div class="contact-item" role="listitem">
+              <div class="contact-item-icon" aria-hidden="true"><i data-lucide="mail"></i></div>
+              <div>
+                <div class="contact-item-label">Email</div>
+                <div class="contact-item-value">webjugaadlabs@gmail.com</div>
+              </div>
+            </div>
+            <div class="contact-item" role="listitem">
+              <div class="contact-item-icon" aria-hidden="true"><i data-lucide="phone-call"></i></div>
+              <div>
+                <div class="contact-item-label">Phone / WhatsApp</div>
+                <div class="contact-item-value">+919214334494</div>
+              </div>
+            </div>
+            <div class="contact-item" role="listitem">
+              <div class="contact-item-icon" aria-hidden="true"><i data-lucide="map-pin"></i></div>
+              <div>
+                <div class="contact-item-label">Location</div>
+                <div class="contact-item-value">Varanasi · India · Remote-Friendly </i></div>
+              </div>
+            </div>
+          </div>
 
-  // Parallax for mockup windows
-  window.addEventListener('scroll', () => {
-    const scrollY = window.pageYOffset;
-    document.querySelectorAll('.parallax-target').forEach(el => {
-      const speed = 0.05;
-      const rect = el.getBoundingClientRect();
-      const inView = rect.top < window.innerHeight && rect.bottom > 0;
-      if (inView) {
-        const offset = (window.innerHeight / 2 - rect.top) * speed;
-        el.style.transform = `translateY(${offset}px)`;
-      }
-    });
-    
-    // Sticky Nav hide/show
-    const nav = document.getElementById('mainNav');
-    if (scrollY > 100) {
-      if (scrollY > (window.lastScroll || 0)) {
-        nav.style.transform = 'translateY(-100%)';
-      } else {
-        nav.style.transform = 'translateY(0)';
-      }
-    } else {
-      nav.style.transform = 'translateY(0)';
-    }
-    window.lastScroll = scrollY;
-  });
+          <div class="contact-social" aria-label="Social media links">
+            <a href="https://www.instagram.com/webjugad.labs" class="social-link" aria-label="Instagram"
+              id="social-instagram" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/anupam-yadavv" class="social-link" aria-label="LinkedIn"
+              id="social-linkedin" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+          </div>
+        </div>
 
-  // Mobile Menu
-  const menuBtn = document.getElementById('menuBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  const menuIcon = document.getElementById('menuIcon');
-  menuBtn.addEventListener('click', () => {
-    const isHidden = mobileMenu.classList.toggle('hidden');
-    menuIcon.textContent = isHidden ? 'menu' : 'close';
-  });
+        <!-- Right: Form -->
+        <div class="contact-form-wrap reveal reveal-delay-2">
+          <h3 class="form-title">Send Us a Message 💬</h3>
 
-  // Rotating Headline Word
-  const rotateWord = document.getElementById('rotateWord');
-  const words = ['Experiences', 'Platforms', 'Products', 'Automations'];
-  let currentWordIndex = 0;
-  
-  setInterval(() => {
-    rotateWord.classList.add('word-swap');
-    setTimeout(() => {
-      currentWordIndex = (currentWordIndex + 1) % words.length;
-      rotateWord.textContent = words[currentWordIndex];
-      rotateWord.classList.remove('word-swap');
-    }, 400);
-  }, 3000);
+          <form id="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+            <input type="hidden" name="access_key" value="f951bc47-9a0b-42f1-ad1f-cd9607fb0fcc">
+            <input type="hidden" name="subject" value="🚀 New Website Inquiry - WebJugad Labs">
+            <input type="hidden" name="from_name" value="WebJugad Labs Website">
+            <input type="hidden" name="replyto" value="">
+            <input type="checkbox" name="botcheck" style="display:none;">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-name">Your Name</label>
+                <input type="text" id="form-name" name="name" placeholder="Ravi Kumar" required autocomplete="name" />
+              </div>
+              <div class="form-group">
+                <label for="form-email">Email Address</label>
+                <input type="email" id="form-email" name="email" placeholder="webjugadlabs@gmail.com" required
+                  autocomplete="email" />
+              </div>
+            </div>
 
-  // Form Success
-  document.getElementById('contactForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    document.getElementById('formSuccess').classList.remove('hidden');
-    e.target.reset();
-  });
-</script>
-</body></html>
+            <div class="form-group">
+              <label for="form-service">Service Interested In</label>
+              <select id="form-service" name="service" required>
+                <option value="" disabled selected>Select a service…</option>
+                <option value="web-design">Web Design</option>
+                <option value="logo-design">Logo Design</option>
+                <option value="brand-design">Brand Design</option>
+                <option value="full-package">Full Package (Web + Brand)</option>
+                <option value="other">Other / Not Sure Yet</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="form-message">Tell Us About Your Project</label>
+              <textarea id="form-message" name="message"
+                placeholder="Tell us about your brand, what you're looking to build, and any specific requirements…"
+                required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary form-submit" id="form-submit-btn">
+              Send Message <i data-lucide="mail"></i>
+            </button>
+            <div id="form-status" class="form-status"></div>
+          </form>
+
+          <div class="form-success" id="form-success" role="alert" aria-live="polite">
+            <div class="form-success-icon" aria-hidden="true"><i data-lucide="circle-check-big"></i></div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem;">
+              Message Sent!</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Thanks for reaching out! We'll get back to you
+              within 24 hours.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer id="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+
+        <div class="footer-brand">
+          <a href="#hero" class="nav-logo" aria-label="WebJugad Labs Home"
+            style="margin-bottom: 0.25rem; display: inline-flex;">
+            <div class="nav-logo-icon">
+              <div class="nav-logo-icon">
+                <img src="logo.png" alt="WebJugad Labs Logo">
+              </div>
+            </div>
+            <div class="nav-logo-text">Web<span>Jugad</span> Labs</div>
+          </a>
+          <p>A creative design studio crafting bold digital experiences. We partner with ambitious brands to make them
+            unforgettable.</p>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Services</h4>
+          <ul class="footer-links" role="list">
+            <li><a href="#services">Web Design</a></li>
+            <li><a href="#services">Logo Design</a></li>
+            <li><a href="#services">Brand Design</a></li>
+            <li><a href="#contact">Custom Project</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Company</h4>
+          <ul class="footer-links" role="list">
+            <li><a href="#portfolio">Portfolio</a></li>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Follow Us</h4>
+          <ul class="footer-links" role="list">
+            <li><a href="https://www.instagram.com/webjugad.labs" id="footer-instagram">Instagram</a></li>
+            <li><a href="https://www.linkedin.com/in/anupam-yadavv" id="footer-linkedin">LinkedIn</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2025 <span>WebJugad Labs</span>. All rights reserved.</p>
+        <p class="footer-made">Made with ❤️ in India</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+  </script>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
